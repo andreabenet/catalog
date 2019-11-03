@@ -7,8 +7,25 @@ const Category = require("../models/category");
 const Product = require("../models/product");
 
 router.get("/", async (req, res) => {
+  // query parameteres
   try {
-    res.status(200).send(await Product.find());
+    let search = Product.find();
+    if (req.query.category && req.query.title) {
+      search = Product.find()
+        .where("category")
+        .equals(req.query.category)
+        .where("title")
+        .equals(RegExp(req.query.title, "i"));
+    } else if (req.query.title) {
+      search = Product.find()
+        .where("title")
+        .equals(RegExp(req.query.title, "i"));
+    } else if (req.query.category) {
+      search = Product.find()
+        .where("category")
+        .equals(req.query.category);
+    }
+    res.status(200).send(await search); // lance la recherche
   } catch (error) {
     res.status(400).send(error.message);
   }
