@@ -49,10 +49,6 @@ router.put("/update", async (req, res) => {
 
     // Update the average rating: retrieve product with the updated review
     const product = await Product.findOne({ reviews: { $in: [req.body.id] } });
-    console.log("Old rating : " + oldRating);
-    console.log("old average : " + product.averageRating);
-    console.log("nb review : " + product.reviews.length);
-    console.log("new rating : " + req.body.rating);
     product.averageRating =
       product.averageRating +
       (-oldRating + req.body.rating) / product.reviews.length;
@@ -62,6 +58,42 @@ router.put("/update", async (req, res) => {
     res.status(200).send("updated review");
   } catch (error) {
     res.status(400).send(error.message);
+  }
+});
+
+router.delete("/delete", async (req, res) => {
+  try {
+    // remove review
+    if (req.body.id === undefined) {
+      return res.status(400).send("Wrong parameters");
+    }
+    if ((await Review.findById(req.body.id)) === null) {
+      return res.status(400).send("Element not found");
+    }
+    const review = await Review.findById(req.body.id);
+    const oldRating = review.rating;
+    await review.remove();
+
+    // update average rating
+    const product = await Product.findOne({ reviews: req.body.id });
+    console.log("Old rating : " + oldRating);
+    console.log("Old average : " + product.averageRating);
+    console.log("Nb review : " + product.reviews.length);
+    product.averageRating =
+      (product.averageRating - oldRating) / (product.reviews.length - 1);
+    console.log(product.averageRating);
+    // remove review from product array
+    for (let i = 0; i < product.reviews.length; i++) {
+      if (product.reviews[i] == req.body.id) {
+        product.reviews.splice(i, 1);
+      }
+    }
+    //save product
+    product.save();
+
+    res.status(200).send("OK");
+  } catch (error) {
+    res.status(200).send(error.message);
   }
 });
 
