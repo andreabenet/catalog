@@ -7,8 +7,8 @@ const Category = require("../models/category");
 const Product = require("../models/product");
 
 router.get("/", async (req, res) => {
-  // query parameteres
   try {
+    // Advanced search with query parameters, should better handle parameteres combinations
     let search = Product.find();
     if (req.query.category && req.query.title) {
       search = Product.find()

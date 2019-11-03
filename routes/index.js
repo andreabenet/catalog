@@ -5,5 +5,6 @@ const router = express.Router();
 router.use("/department", require("./department"));
 router.use("/category", require("./category"));
 router.use("/product", require("./product"));
+router.use("/review", require("./review"));
 
 module.exports = router;
