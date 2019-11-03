@@ -1,12 +1,55 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/", (req, res) => {});
+// retrieve models
+const Department = require("../models/department");
+const Category = require("../models/category");
+const Product = require("../models/product");
 
-router.post("/create", (req, res) => {});
+router.get("/", async (req, res) => {
+  try {
+    res.status(200).send(await Product.find());
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
 
-router.put("/update", (req, res) => {});
+router.post("/create", async (req, res) => {
+  try {
+    const newProduct = new Product({
+      title: req.body.title,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category
+    });
+    await newProduct.save();
+    res.status(200).send("Product Created");
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
 
-router.delete("/delete", (req, res) => {});
+router.put("/update", async (req, res) => {
+  try {
+    const product = await Product.findOne({ _id: req.body.id });
+    product.title = req.body.title;
+    product.description = req.body.description;
+    product.price = req.body.price;
+    product.department = req.body.department;
+    await product.save();
+    res.status(200).send("Product updated");
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
+router.delete("/delete", async (req, res) => {
+  try {
+    await Product.findOne({ _id: req.body.id }).remove();
+    res.status(200).send("Product deleted");
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
 
 module.exports = router;
