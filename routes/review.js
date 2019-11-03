@@ -35,4 +35,34 @@ router.post("/create", async (req, res) => {
   }
 });
 
+router.put("/update", async (req, res) => {
+  try {
+    // Update the review
+    if (req.body.id === undefined) {
+      return res.status(400).send("wrong parameters");
+    }
+    const review = await Review.findById(req.body.id);
+    const oldRating = review.rating;
+    req.body.rating ? (review.rating = req.body.rating) : null;
+    req.body.comment ? (review.comment = req.body.comment) : null;
+    await review.save();
+
+    // Update the average rating: retrieve product with the updated review
+    const product = await Product.findOne({ reviews: { $in: [req.body.id] } });
+    console.log("Old rating : " + oldRating);
+    console.log("old average : " + product.averageRating);
+    console.log("nb review : " + product.reviews.length);
+    console.log("new rating : " + req.body.rating);
+    product.averageRating =
+      product.averageRating +
+      (-oldRating + req.body.rating) / product.reviews.length;
+    await product.save();
+
+    // acknowledge
+    res.status(200).send("updated review");
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
 module.exports = router;
