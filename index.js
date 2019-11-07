@@ -6,10 +6,15 @@ const app = express();
 app.use(bodyParser());
 
 // connect to the database
-mongoose.connect("mongodb://localhost/catalog", { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/catalog", {
+  useNewUrlParser: true,
+  useUnifiedTopologie: true // enlever un warning sur la console
+});
 
 // acces de routes
 app.use(require("./routes"));
 
 // Start server
-app.listen(3000, () => console.log("Server has started"));
+app.listen(process.env.PORT || 3000, () => console.log("Server has started"));
+// attenation on ne peut pas avoir plusieurs projets qui ecoutent sur le même port
+// process.env.PORT c une variable qui nous ai donné par heroku
