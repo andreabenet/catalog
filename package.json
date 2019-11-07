@@ -4,14 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "fire": "git add . && git commit -m 'pas le temps, feu!' && git push"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/andreabenet/catalog.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Andrea Benet Porres",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/andreabenet/catalog/issues"

@@ -39,8 +39,18 @@ router.put("/update", async (req, res) => {
 
 router.delete("/delete", async (req, res) => {
   try {
-    await Category.deleteMany({ department: req.body.id });
-    await Department.findOne({ _id: req.body.id }).remove();
+    const departmentId = req.query.id;
+    if (department) {
+      const categoryToRemove = await Category.find({
+        department: req.query.id
+      });
+      for (let i = 0; i < categoryToRemove(); i++) {
+        await Product.deleteMany({ category: categoryToRemove[i]._id });
+        await categoryToRemove[i].remove();
+      }
+      await Department.findById({ _id: req.body.id }).remove();
+    }
+
     res.status(200).send("Derpartment deleted");
   } catch (error) {
     res.status(400).send(error.message);

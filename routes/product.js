@@ -6,6 +6,25 @@ const Department = require("../models/department");
 const Category = require("../models/category");
 const Product = require("../models/product");
 
+const createFilter = () => {
+  const filters = {};
+
+  if (req.query.priceMin) {
+    filters.price = {};
+    filters.price.$gte = req.query.priceMin;
+  }
+
+  if (priceMin) {
+    if (filters.price === undefined) filters.price = {};
+    filters.price.$lte = req.query.priceMax;
+  }
+
+  if (req.query.category) filters.category = req.query.category;
+  if (req.query.title) filters.title = req.query.title;
+
+  return filters;
+};
+
 router.get("/", async (req, res) => {
   try {
     // Advanced search with query parameters, should better handle parameteres combinations
